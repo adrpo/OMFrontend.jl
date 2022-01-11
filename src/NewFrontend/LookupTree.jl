@@ -307,6 +307,11 @@ function add(
   conflictFunc::ConflictFunc = addConflictDefault,
 )::Tree
   local tree = inTree::Tree
+
+   str = "adding node: " * keyStr(inKey)
+   println(str)
+   flush(stdout)
+
    tree = begin
     local key::Key
     local value::Value
@@ -357,6 +362,7 @@ function add(
       end
     end
   end
+  print(printTreeStr(tree))
   return tree
 end
 
@@ -794,6 +800,9 @@ function printNodeStr(inNode::Tree)::String
   local outString::String
   outString = begin
     @match inNode begin
+      EMPTY(__) => begin
+        "EMPTY()"
+      end
       NODE(__) => begin
         keyStr(inNode.key)
       end

@@ -1,0 +1,2 @@
+loadFile("MWE.mo"); getErrorString();
+instantiateModel(MWE.A); getErrorString();

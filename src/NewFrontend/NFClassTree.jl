@@ -2051,7 +2051,7 @@ function resolveImport(index::Int, tree::ClassTree)::InstNode
   end
   #=  Imports are resolved on demand, i.e. here.
   =#
-  @assign (element, changed, imp) = P_Import.Import.resolve(imports[index])
+  @assign (element, changed, imp) = resolve(imports[index])
   #=  Save the import if it wasn't already resolved.
   =#
   if changed
@@ -2223,29 +2223,29 @@ function addImportConflict(
         =#
         @assign entry = begin
           @match (imp1, imp2) begin
-            (P_Import.Import.UNRESOLVED_IMPORT(__), P_Import.Import.UNRESOLVED_IMPORT(__)) => begin
+            (Import.UNRESOLVED_IMPORT(__), Import.UNRESOLVED_IMPORT(__)) => begin
               #=  Two qualified imports of the same name gives an error.
               =#
               arrayUpdate(
                 imports,
                 oldEntry.index,
-                P_Import.Import.CONFLICTING_IMPORT(imp1, imp2),
+                Import.CONFLICTING_IMPORT(imp1, imp2),
               )
               oldEntry
             end
 
-            (P_Import.Import.RESOLVED_IMPORT(__), P_Import.Import.RESOLVED_IMPORT(__)) => begin
+            (Import.RESOLVED_IMPORT(__), Import.RESOLVED_IMPORT(__)) => begin
               #=  A name imported from several unqualified imports gives an error.
               =#
               arrayUpdate(
                 imports,
                 oldEntry.index,
-                P_Import.Import.CONFLICTING_IMPORT(imp1, imp2),
+                Import.CONFLICTING_IMPORT(imp1, imp2),
               )
               oldEntry
             end
 
-            (P_Import.Import.UNRESOLVED_IMPORT(__), _) => begin
+            (Import.UNRESOLVED_IMPORT(__), _) => begin
               newEntry
             end
 
@@ -2277,6 +2277,9 @@ function addImport(
   tree::LookupTree.Tree,
   imports::Vector{<:Import},
 )::LookupTree.Tree
+
+  println("adding import: " * name(imp))
+  flush(stdout)
 
   @assign tree = LookupTree.add(
     tree,
